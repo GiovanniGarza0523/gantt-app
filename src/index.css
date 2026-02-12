@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-construction-primary: #f97316;
+  --color-construction-bg: #f8fafc;
+  --color-construction-accent: #ea580c;
+  --color-landscaping-primary: #16a34a;
+  --color-landscaping-bg: #f0fdf4;
+  --color-landscaping-accent: #15803d;
+}
+
+/* A4 page dimensions for the canvas */
+.a4-page {
+  width: 210mm;
+  min-height: 297mm;
+  background: white;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Print styles for Field Sheet */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-target,
+  .print-target * {
+    visibility: visible;
+  }
+  .print-target {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Touch-friendly inputs */
+.touch-input {
+  min-height: 44px;
+  font-size: 16px;
+}
+
+/* Drag handle styling */
+.drag-handle {
+  cursor: grab;
+  touch-action: none;
+}
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Block hover state in edit mode */
+.block-editable:hover {
+  outline: 2px dashed #94a3b8;
+  outline-offset: 4px;
+}
+.block-editable.is-dragging {
+  opacity: 0.5;
+}
