@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
-import { createDefaultDocument } from '../data/mockData.js'
+import { createDefaultDocument, TRADES } from '../data/mockData.js'
 import { loadDocument, saveDocument } from '../utils/storage.js'
 
 const DocumentContext = createContext(null)
@@ -7,7 +7,8 @@ const DocumentContext = createContext(null)
 export function DocumentProvider({ children }) {
   const [doc, setDoc] = useState(() => {
     const saved = loadDocument()
-    return saved || createDefaultDocument('commercial')
+    if (saved && saved.trade && saved.lineItems) return saved
+    return createDefaultDocument('landscaping')
   })
   const [editMode, setEditMode] = useState(true)
   const [showFieldSheet, setShowFieldSheet] = useState(false)
@@ -16,51 +17,63 @@ export function DocumentProvider({ children }) {
     saveDocument(doc)
   }, [doc])
 
+  const trade = TRADES[doc.trade] || TRADES.landscaping
+
   const updateDoc = useCallback((updates) => {
     setDoc((prev) => ({ ...prev, ...updates }))
   }, [])
 
-  const updateBlock = useCallback((blockId, data) => {
+  const switchTrade = useCallback((tradeId) => {
+    const t = TRADES[tradeId]
+    if (!t) return
     setDoc((prev) => ({
       ...prev,
-      blocks: prev.blocks.map((b) =>
-        b.id === blockId ? { ...b, data: { ...b.data, ...data } } : b
+      trade: tradeId,
+      terms: t.defaultTerms,
+    }))
+  }, [])
+
+  const addLineItem = useCallback(() => {
+    setDoc((prev) => ({
+      ...prev,
+      lineItems: [...prev.lineItems, { description: '', qty: 1, unitCost: 0 }],
+    }))
+  }, [])
+
+  const updateLineItem = useCallback((index, field, value) => {
+    setDoc((prev) => ({
+      ...prev,
+      lineItems: prev.lineItems.map((item, i) =>
+        i === index
+          ? { ...item, [field]: field === 'description' ? value : Number(value) || 0 }
+          : item
       ),
     }))
   }, [])
 
-  const toggleBlockVisibility = useCallback((blockId) => {
+  const removeLineItem = useCallback((index) => {
     setDoc((prev) => ({
       ...prev,
-      blocks: prev.blocks.map((b) =>
-        b.id === blockId ? { ...b, visible: !b.visible } : b
-      ),
+      lineItems: prev.lineItems.filter((_, i) => i !== index),
     }))
   }, [])
 
-  const reorderBlocks = useCallback((newBlocks) => {
-    setDoc((prev) => ({ ...prev, blocks: newBlocks }))
-  }, [])
-
-  const switchTemplate = useCallback((template) => {
-    setDoc((prev) => ({ ...prev, template }))
-  }, [])
-
-  const resetDocument = useCallback((template) => {
-    setDoc(createDefaultDocument(template || 'commercial'))
-  }, [])
+  const resetDocument = useCallback((tradeId) => {
+    setDoc(createDefaultDocument(tradeId || doc.trade || 'landscaping'))
+  }, [doc.trade])
 
   const value = {
     doc,
+    trade,
     editMode,
     setEditMode,
     showFieldSheet,
     setShowFieldSheet,
     updateDoc,
-    updateBlock,
-    toggleBlockVisibility,
-    reorderBlocks,
-    switchTemplate,
+    switchTrade,
+    addLineItem,
+    updateLineItem,
+    removeLineItem,
     resetDocument,
   }
 
