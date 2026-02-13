@@ -1,10 +1,8 @@
 import { X } from 'lucide-react'
 import { useDocument } from '../context/DocumentContext.jsx'
-import { TEMPLATES } from '../data/mockData.js'
 
 export default function FieldSheet() {
-  const { doc, setShowFieldSheet } = useDocument()
-  const theme = TEMPLATES[doc.template]
+  const { doc, trade, setShowFieldSheet } = useDocument()
 
   const handlePrint = () => {
     window.print()
@@ -26,7 +24,7 @@ export default function FieldSheet() {
         <button
           onClick={handlePrint}
           className="rounded-lg px-4 py-2 text-sm font-medium text-white"
-          style={{ backgroundColor: theme.primaryColor }}
+          style={{ backgroundColor: trade.primaryColor }}
         >
           Print Sheet
         </button>
@@ -41,15 +39,17 @@ export default function FieldSheet() {
       {/* Printable Sheet */}
       <div className="print-target my-8 bg-white" style={{ width: '8.5in', minHeight: '11in', padding: '0.6in' }}>
         {/* Header */}
-        <div className="mb-6 flex items-center justify-between border-b-4 pb-4" style={{ borderColor: theme.primaryColor }}>
+        <div className="mb-6 flex items-center justify-between border-b-4 pb-4" style={{ borderColor: trade.primaryColor }}>
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: theme.textColor }}>
-              {doc.companyName}
+            <h1 className="text-2xl font-bold" style={{ color: trade.textColor }}>
+              {doc.companyName || 'Your Business Name'}
             </h1>
-            <p className="text-sm text-slate-500">{doc.companyTagline}</p>
+            <p className="text-sm text-slate-500">
+              {[doc.companyPhone, doc.companyEmail].filter(Boolean).join(' | ')}
+            </p>
           </div>
           <div className="text-right">
-            <p className="text-sm font-semibold" style={{ color: theme.primaryColor }}>
+            <p className="text-sm font-semibold" style={{ color: trade.primaryColor }}>
               FIELD SHEET
             </p>
             <p className="text-xs text-slate-400">Date: _______________</p>
@@ -60,7 +60,7 @@ export default function FieldSheet() {
         <div className="mb-6">
           <h2
             className="mb-3 text-sm font-bold uppercase tracking-wider"
-            style={{ color: theme.primaryColor }}
+            style={{ color: trade.primaryColor }}
           >
             Client Information
           </h2>
@@ -74,16 +74,16 @@ export default function FieldSheet() {
           </div>
         </div>
 
-        {/* Project Details */}
+        {/* Job Details */}
         <div className="mb-6">
           <h2
             className="mb-3 text-sm font-bold uppercase tracking-wider"
-            style={{ color: theme.primaryColor }}
+            style={{ color: trade.primaryColor }}
           >
-            Project Details
+            Job Details
           </h2>
           <div className="grid grid-cols-2 gap-x-6">
-            {blankLine('Project Type')}
+            {blankLine('Job Type')}
             {blankLine('Estimated Start Date')}
             {blankLine('Location / Area')}
             {blankLine('Estimated Duration')}
@@ -99,7 +99,7 @@ export default function FieldSheet() {
         <div className="mb-6">
           <h2
             className="mb-3 text-sm font-bold uppercase tracking-wider"
-            style={{ color: theme.primaryColor }}
+            style={{ color: trade.primaryColor }}
           >
             Measurements & Sketch Area
           </h2>
@@ -118,7 +118,7 @@ export default function FieldSheet() {
         <div className="mb-6">
           <h2
             className="mb-3 text-sm font-bold uppercase tracking-wider"
-            style={{ color: theme.primaryColor }}
+            style={{ color: trade.primaryColor }}
           >
             Job-Site Checklist
           </h2>
@@ -145,7 +145,7 @@ export default function FieldSheet() {
         <div>
           <h2
             className="mb-3 text-sm font-bold uppercase tracking-wider"
-            style={{ color: theme.primaryColor }}
+            style={{ color: trade.primaryColor }}
           >
             Additional Notes
           </h2>
@@ -155,9 +155,9 @@ export default function FieldSheet() {
         </div>
 
         {/* Footer */}
-        <div className="mt-8 border-t-2 pt-3 text-center" style={{ borderColor: theme.primaryColor }}>
+        <div className="mt-8 border-t-2 pt-3 text-center" style={{ borderColor: trade.primaryColor }}>
           <p className="text-xs text-slate-400">
-            {doc.companyName} | {doc.companyPhone} | {doc.companyEmail}
+            {doc.companyName}{doc.companyPhone ? ` | ${doc.companyPhone}` : ''}{doc.companyEmail ? ` | ${doc.companyEmail}` : ''}
           </p>
         </div>
       </div>

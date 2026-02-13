@@ -33,7 +33,7 @@ export function importDocument(file) {
     reader.onload = (e) => {
       try {
         const doc = JSON.parse(e.target.result)
-        if (doc.docId && doc.blocks) {
+        if (doc.docId && doc.lineItems) {
           resolve(doc)
         } else {
           reject(new Error('Invalid BidBuilder document'))
